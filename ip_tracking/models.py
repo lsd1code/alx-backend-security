@@ -1,3 +1,10 @@
 from django.db import models
 
-# Create your models here.
+
+class RequestLog(models.Model):
+    ip_address = models.CharField(max_length=32, null=False)
+    path = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return 'f{self.id}'
