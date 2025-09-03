@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from ip_tracking.models import BlockedIP, RequestLog
+
+admin.site.register(BlockedIP)
+admin.site.register(RequestLog)
