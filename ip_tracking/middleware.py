@@ -1,16 +1,16 @@
 """
 ! Writing your own middleware
-
 Middleware factory is a callable that takes a a `get_response` callable param and returns a middleware.
 Middleware is a callable that takes a request and returns a response 
 
 ! Activating Middleware
-
 To activate the Middleware, add it to the `Middleware` list in `settings.py`
 
 ! IP Blocking
-
 Ensure that the middleware component blocks requests from IPs in `BlockedIP` model, then return `403_Forbidden` status
+
+! IP Geolocation Analytics
+Enhance logging with geolocation date
 """
 
 import logging
