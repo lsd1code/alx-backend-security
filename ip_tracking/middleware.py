@@ -15,7 +15,9 @@ Ensure that the middleware component blocks requests from IPs in `BlockedIP` mod
 
 import logging
 from django.http import HttpRequest, HttpResponse
+from django.views.decorators.cache import cache_page
 from rest_framework.status import HTTP_403_FORBIDDEN
+from django_ip_geolocation.decorators import with_ip_geolocation
 
 from ip_tracking.models import (
     RequestLog,
@@ -36,6 +38,9 @@ def logging_middleware(get_response):
         - Creates a RequestLog entry with the IP address and request path.
         - Passes the request to the next middleware or view.
     """
+
+    @with_ip_geolocation
+    @cache_page(60 * 24)
     def middleware(request: HttpRequest):
         ip_address = request.META['REMOTE_ADDR']
         exists = BlockedIP.objects.filter(ip_address=ip_address).exists()
@@ -49,11 +54,15 @@ def logging_middleware(get_response):
         logging.info(f"REQUEST HEADERS: {request.headers}")
         logging.info(f"FULL PATH: {request.get_full_path()}")
 
+        city = request.geolocation['city']  # type:ignore
+        country = request.geolocation['country']  # type:ignore
+
         RequestLog.objects.create(
             ip_address=ip_address,
-            path=request.get_full_path()
+            path=request.get_full_path(),
+            country=country,
+            city=city
         )
 
         return get_response(request)
-
     return middleware
